@@ -1,7 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Quiz from './Quiz';
-import HoldingPage from './Holding';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Quiz from "./Quiz";
+import HoldingPage from "./Holding";
 
 function App() {
   return (
