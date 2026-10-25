@@ -1,1 +1,36 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="./favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#0b0f19"/><meta name="description" content="QuizMaster - Interactive Quiz Application built with React"/><link rel="apple-touch-icon" href="./logo192.png"/><link rel="manifest" href="./manifest.json"/><title>QuizMaster - Interactive Trivia</title><script defer="defer" src="./static/js/main.b190e608.js"></script><link href="./static/css/main.639602c8.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="description" content="Fast, lightweight trivia you can play anywhere.">
+    <link rel="icon" href="./public/favicon.ico">
+    <link rel="stylesheet" href="./src/index.css">
+    <link rel="stylesheet" href="./src/App.css">
+    <title>QuizMaster — Interactive Trivia</title>
+  </head>
+  <body>
+    <div class="app-shell" id="app">
+      <header class="navbar">
+        <div class="nav-container">
+          <a class="brand-logo" href="#/" aria-label="QuizMaster home">
+            <span aria-hidden="true">✨</span><span class="brand-name">QuizMaster</span>
+          </a>
+          <nav class="nav-links" aria-label="Main navigation">
+            <a class="nav-link" href="#/">Categories</a>
+            <button class="nav-link nav-button" type="button" data-action="quick">Quick Play</button>
+            <button class="sound-toggle-btn" type="button" data-action="sound" aria-label="Mute sound" title="Mute sound effects">🔊</button>
+          </nav>
+        </div>
+      </header>
+      <main class="main-content">
+        <div class="content-wrapper" id="screen" aria-live="polite"></div>
+      </main>
+      <footer class="footer">
+        <p>Crafted with JavaScript · <a href="https://github.com/OiMoulder/Quiz" target="_blank" rel="noreferrer">GitHub</a></p>
+      </footer>
+    </div>
+    <script type="module" src="./src/App.js"></script>
+  </body>
+</html>
