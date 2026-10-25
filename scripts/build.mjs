@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 const root = process.cwd();
 const output = resolve(root, 'dist');
 const browserFiles = [
-  'app.js',
+  'App.js',
   'quiz-engine.js',
   'QuizData.js',
   'soundEffects.js',
