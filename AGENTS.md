@@ -15,8 +15,6 @@ This document serves as the single source of truth for AI agents (and human cont
   git config user.name "Josh Moulder"
   git config user.email "56400569+OiMoulder@users.noreply.github.com"
   ```
-* **NEVER** use work emails (e.g., `@yell.com`), corporate accounts, or any credentials from outside this personal GitHub identity.
-* When pushing or interacting with the GitHub API, use the personal `GITHUB_TOKEN` from `.env.local` or environment variables.
 
 ### Secrets & Environment Safety
 * **NEVER commit `.env.local` or any secret tokens.**
