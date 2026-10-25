@@ -16,7 +16,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="app-shell">
         {/* Navigation Bar */}
         <header className="navbar">
