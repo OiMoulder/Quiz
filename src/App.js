@@ -17,6 +17,7 @@ const state = {
   streak: 0,
   timeLeft: QUESTION_SECONDS,
   answered: false,
+  selectedOption: null,
   history: [],
   sessionHistory: [],
   filter: 'all',
@@ -134,6 +135,7 @@ function startGame() {
   });
   state.questionIndex = 0;
   state.answered = false;
+  state.selectedOption = null;
   state.timeLeft = QUESTION_SECONDS;
   navigate('quiz');
 }
@@ -175,11 +177,13 @@ function renderQuiz() {
       <div class="options-grid">
         ${question.options.map((option, index) => {
           const isCorrect = option === question.answer;
-          const isSelected = state.history.at(-1)?.id === question.id && state.history.at(-1)?.userAnswer === option;
+          const isSelected = state.answered
+            ? state.history.at(-1)?.id === question.id && state.history.at(-1)?.userAnswer === option
+            : state.selectedOption === option;
           const optionClass = state.answered
             ? isCorrect ? 'option-correct' : isSelected ? 'option-incorrect' : 'option-dimmed'
-            : '';
-          return `<button type="button" class="option-btn ${optionClass}" data-action="answer" data-index="${index}" ${state.answered ? 'disabled' : ''}>
+            : isSelected ? 'option-selected' : '';
+          return `<button type="button" class="option-btn ${optionClass}" data-action="${state.answered ? 'answer-locked' : 'select-answer'}" data-index="${index}" aria-pressed="${isSelected}" ${state.answered ? 'disabled' : ''}>
             <span class="option-marker">${String.fromCharCode(65 + index)}</span>
             <span class="option-label">${escapeHtml(option)}</span>
             ${state.answered && isCorrect ? '<span class="option-icon" aria-label="Correct">✓</span>' : ''}
@@ -192,7 +196,7 @@ function renderQuiz() {
         <span>Score: <strong class="text-accent">${state.score}</strong></span>
         ${state.answered
           ? `<button type="button" class="btn btn-primary" data-action="next">${state.questionIndex < state.questions.length - 1 ? 'Next Question →' : 'Finish Quiz 🏁'}</button>`
-          : '<span class="choose-hint">Choose an answer</span>'}
+          : `<button type="button" class="btn btn-primary" data-action="submit-answer" ${state.selectedOption === null ? 'disabled' : ''}>Submit Answer</button>`}
       </div>
     </section>`;
 
@@ -207,14 +211,29 @@ function startTimer() {
       timer.textContent = `⏱️ ${state.timeLeft}s`;
       timer.classList.toggle('timer-warning', state.timeLeft <= 5);
     }
-    if (state.timeLeft <= 0) submitAnswer(null);
+    if (state.timeLeft <= 0) submitAnswer(state.selectedOption);
   }, 1000);
+}
+
+function selectAnswer(option) {
+  if (state.answered) return;
+  state.selectedOption = option;
+
+  for (const button of screen.querySelectorAll('[data-action="select-answer"]')) {
+    const isSelected = currentQuestion().options[Number(button.dataset.index)] === option;
+    button.classList.toggle('option-selected', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+  }
+
+  screen.querySelector('[data-action="submit-answer"]').disabled = false;
+  soundManager.playClick();
 }
 
 function submitAnswer(option) {
   if (state.answered) return;
   clearTimer();
   const question = currentQuestion();
+  state.selectedOption = option;
   const correct = option === question.answer;
   state.answered = true;
   state.timeLeft = option === null ? 0 : state.timeLeft;
@@ -242,6 +261,7 @@ function advanceQuestion() {
   if (state.questionIndex < state.questions.length - 1) {
     state.questionIndex += 1;
     state.answered = false;
+    state.selectedOption = null;
     state.timeLeft = QUESTION_SECONDS;
     renderQuiz();
   } else {
@@ -264,6 +284,7 @@ function nextRound() {
   state.history = [];
   state.questionIndex = 0;
   state.answered = false;
+  state.selectedOption = null;
   state.timeLeft = QUESTION_SECONDS;
   state.questions = selectQuestions({
     category: state.category,
@@ -425,9 +446,11 @@ app.addEventListener('click', event => {
   } else if (action === 'quick') {
     state.mode = 'quick';
     startGame();
-  } else if (action === 'answer') {
+  } else if (action === 'select-answer') {
     const option = currentQuestion()?.options[Number(button.dataset.index)];
-    if (option !== undefined) submitAnswer(option);
+    if (option !== undefined) selectAnswer(option);
+  } else if (action === 'submit-answer') {
+    if (state.selectedOption !== null) submitAnswer(state.selectedOption);
   } else if (action === 'next') {
     advanceQuestion();
   } else if (action === 'continue') {
