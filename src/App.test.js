@@ -27,7 +27,7 @@ test('renders quiz component with question and options', () => {
   ];
 
   render(
-    <HashRouter>
+    <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Quiz initialQuestions={sampleQuestions} />
     </HashRouter>
   );
@@ -69,7 +69,7 @@ test('renders results page with score breakdown and review', () => {
   ];
 
   render(
-    <HashRouter>
+    <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Result score={1} totalQuestions={2} history={history} />
     </HashRouter>
   );
@@ -82,7 +82,7 @@ test('renders results page with score breakdown and review', () => {
 
 test('renders holding intermission page', () => {
   render(
-    <HashRouter>
+    <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <HoldingPage round={1} score={4} />
     </HashRouter>
   );
