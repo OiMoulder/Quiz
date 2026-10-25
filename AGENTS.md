@@ -1,6 +1,6 @@
 # AGENTS.md — Development & Contribution Guide for AI Agents
 
-Welcome to **QuizMaster** (`OiMoulder/Quiz`). This repository is an interactive trivia and quiz web application built with React, styled with vanilla modern CSS, and hosted entirely on GitHub Pages.
+Welcome to **QuizMaster** (`OiMoulder/Quiz`). This repository is an interactive trivia and quiz web application built with native browser JavaScript and CSS, and hosted entirely on GitHub Pages.
 
 This document serves as the single source of truth for AI agents (and human contributors paired with AI) working on this codebase.
 
@@ -31,20 +31,16 @@ This document serves as the single source of truth for AI agents (and human cont
 
 ## 2. Technical Architecture & Core Principles
 
-### React & Modern Hooks
-* **Functional Components Only**: All components use functional React with hooks (`useState`, `useEffect`, `useCallback`, `useRef`). Legacy class components have been retired.
-* **Component Responsibilities**:
-  * `App.js`: Top navbar, route definitions, sound toggle state, and footer.
-  * `Home.js`: Category selection, game mode selector (Quick Blitz, Full Challenge, Multi-Round), and start actions.
-  * `Quiz.js`: Core quiz gameplay engine, 20-second countdown timer, live streak counter, instant color-coded feedback, and explanation callouts.
-  * `Holding.js`: Intermission screen for multi-round tournaments, showing round recap and continue controls.
-  * `Result.js`: Final score dashboard, animated SVG accuracy ring, score tier badges, celebratory confetti, filterable question review, and clipboard share.
-  * `soundEffects.js`: Zero-dependency Web Audio API oscillator synthesis (correct chime, incorrect boop, clicks, fanfare) with mute toggle support.
-  * `QuizData.js`: Curated question dataset and filtering helpers.
+### Native Browser JavaScript
+* The application uses browser-native ES modules, HTML, and CSS; it has no runtime framework or third-party dependencies.
+* `index.html` is the static entry point. `src/app.js` handles screens, navigation, state, and user interaction.
+* `src/quiz-engine.js` contains question selection and shuffle helpers. `src/QuizData.js` holds the curated questions and categories.
+* `src/soundEffects.js` synthesizes optional audio with the Web Audio API.
+* Keep the app runnable from static files on GitHub Pages; do not add a client router, bundler, remote font, or external runtime asset without a measured need.
 
 ### Routing & GitHub Pages Compatibility
-* **Always use `HashRouter`**: GitHub Pages is a static host. Using `BrowserRouter` causes HTTP 404 errors on direct navigation or page refresh for subroutes (`/quiz`, `/result`, `/holding`). `HashRouter` (`/#/quiz`, `/#/result`) guarantees 100% reliable navigation.
-* **Relative Asset URLs**: In `package.json`, `"homepage": "."` is required. This ensures all compiled bundles in `build/` use relative paths (`./static/...`), making the app resilient regardless of repository casing (`/Quiz/` vs `/quiz/`) or custom domains.
+* Use hash navigation so the static site works on GitHub Pages project URLs without server-side routing.
+* Keep asset paths relative so the same static output works at the repository root and under `/Quiz/`.
 
 ### Zero-Bloat Styling
 * Styled entirely with modern CSS in `App.css` and `index.css`.
@@ -55,11 +51,9 @@ This document serves as the single source of truth for AI agents (and human cont
 
 ## 3. Toolchain & Node.js Environment
 
-* **Node.js Version**: **Node.js 24** (`.nvmrc` and `engines` in `package.json`: `>=24.0.0`).
+* **Node.js Version**: **Node.js 24** (`engines` in `package.json`: `>=24.0.0`).
 * **CI Runner**: GitHub Actions runs on **`ubuntu-latest`** with Node 24.
-* **Dependency Management**:
-  * Transitive security patches must be placed in the `"overrides"` section of `package.json` to keep `npm audit` clean without breaking the Create React App build pipeline.
-  * Always verify that `npm audit` reports zero critical or high vulnerabilities.
+* **Dependencies**: No npm packages are required. Use Node's built-in HTTP server, file utilities, and test runner.
 
 ---
 
@@ -69,19 +63,17 @@ Before opening or updating a Pull Request, always execute and verify these comma
 
 | Command | Purpose | Expected Result |
 | :--- | :--- | :--- |
-| `npm install` | Install/sync dependencies | Exits cleanly, updates `package-lock.json` |
-| `npm start` | Run local dev server | Starts dev server at `http://localhost:3000` |
-| `CI=true npm test` | Run test suite with Jest/RTL | **All test suites pass** with zero failures |
-| `CI=true npm run build` | Compile production build | **Compiles with 0 errors and 0 warnings** |
-| `npm audit` | Run npm vulnerability scan | No critical or high vulnerabilities |
+| `npm start` | Run the local static server | Starts at `http://127.0.0.1:4173` |
+| `npm test` | Run the built-in Node test suite | All tests pass |
+| `npm run build` | Copy static files into `dist/` | Completes without external tooling |
 
 ---
 
 ## 5. Automated CI/CD Pipeline
 
 The workflow defined in `.github/workflows/node.js.yml`:
-* **Pull Requests to `master`**: Runs `npm ci`, `CI=true npm test`, and `CI=true npm run build`. Does **not** deploy.
-* **Push to `master`**: Tests, builds, and deploys the production `build/` artifact to the `gh-pages` branch using `JamesIves/github-pages-deploy-action@v4`.
+* **Pull Requests to `master`**: Runs `npm ci`, `npm test`, and `npm run build`. Does **not** deploy.
+* **Push to `master`**: Tests, copies the static app to `dist/`, and deploys it to the `gh-pages` branch using `JamesIves/github-pages-deploy-action@v4`.
 
 ---
 
@@ -89,7 +81,7 @@ The workflow defined in `.github/workflows/node.js.yml`:
 
 - [ ] Git author is set to `Josh Moulder <56400569+OiMoulder@users.noreply.github.com>`
 - [ ] `.env.local` is **NOT** staged or committed
-- [ ] `HashRouter` is preserved for all routes
-- [ ] `CI=true npm test` passes 100%
-- [ ] `CI=true npm run build` succeeds without ESLint or compiler warnings
+- [ ] Hash-based navigation is preserved for GitHub Pages
+- [ ] `npm test` passes
+- [ ] `npm run build` succeeds
 - [ ] Pull request opened under `OiMoulder` account

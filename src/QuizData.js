@@ -234,9 +234,12 @@ export function getQuestionsByFilter({ category = 'all', round = null, limit = 5
   if (round !== null && round !== undefined) {
     pool = pool.filter(q => q.round === round);
   }
-  
-  // Deterministic shuffle helper or slice
-  const shuffled = [...pool].sort(() => 0.5 - Math.random());
+
+  const shuffled = [...pool];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
   return limit > 0 ? shuffled.slice(0, limit) : shuffled;
 }
 
