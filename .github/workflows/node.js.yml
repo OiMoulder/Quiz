@@ -26,14 +26,14 @@ jobs:
         run: npm ci
 
       - name: Run unit and integration tests
-        run: CI=true npm test
+        run: npm test
 
       - name: Build production bundle
-        run: CI=true npm run build
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build
+          folder: dist
           branch: gh-pages
